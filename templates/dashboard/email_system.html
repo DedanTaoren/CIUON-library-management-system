@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Email System - Confucius Institute Library{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+        <i class="bi bi-envelope"></i> Email System
+    </h2>
+    <div class="bg-white rounded shadow p-6 mb-6">
+        <h5 class="font-bold mb-2 flex items-center gap-2">
+            <i class="bi bi-info-circle"></i> Email System Status
+        </h5>
+        {% if has_gmail %}
+        <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-2">
+            <strong>Mode:</strong> Gmail SMTP (Active)
+            <p class="mt-2 text-sm">✓ Emails are being sent via Gmail SMTP</p>
+            <p class="text-xs mt-1">Sending from: {{ config.get('GMAIL_USER', 'Not configured') }}</p>
+        </div>
+        {% elif has_sendgrid %}
+        <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-2">
+            <strong>Mode:</strong> SendGrid API (Active)
+            <p class="mt-2 text-sm">✓ Emails are being sent via SendGrid</p>
+        </div>
+        {% else %}
+        <div class="bg-red-100 text-red-800 p-4 rounded-lg mb-2">
+            <strong>Mode:</strong> ⚠️ No Email Service Configured
+            <p class="mt-2 text-sm">Emails will NOT be sent. Please configure Gmail or SendGrid credentials in Secrets.</p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="flex gap-3 flex-wrap mb-6">
+        {% if has_email_service %}
+        <a href="{{ url_for('dashboard.test_email') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+            <i class="bi bi-envelope-check"></i> Test Email
+        </a>
+        <a href="{{ url_for('dashboard.send_due_reminders') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+            <i class="bi bi-send"></i> Send Due Reminders
+        </a>
+        <a href="{{ url_for('dashboard.send_overdue_notices_route') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+            <i class="bi bi-exclamation-triangle"></i> Send Overdue Notices
+        </a>
+        {% else %}
+        <div class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed">
+            <i class="bi bi-send-slash"></i> Email functions disabled (configure credentials first)
+        </div>
+        {% endif %}
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+            <div class="text-green-600 font-bold text-sm mb-1">Emails Sent</div>
+            <div class="text-3xl font-bold text-green-700">{{ email_stats.total_sent }}</div>
+        </div>
+        <div class="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+            <div class="text-red-600 font-bold text-sm mb-1">Failed Emails</div>
+            <div class="text-3xl font-bold text-red-700">{{ email_stats.total_failed }}</div>
+        </div>
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+            <div class="text-blue-600 font-bold text-sm mb-1">Due Reminders</div>
+            <div class="text-3xl font-bold text-blue-700">{{ email_stats.due_reminders }}</div>
+        </div>
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+            <div class="text-amber-600 font-bold text-sm mb-1">Overdue Notices</div>
+            <div class="text-3xl font-bold text-amber-700">{{ email_stats.overdue_notices }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
