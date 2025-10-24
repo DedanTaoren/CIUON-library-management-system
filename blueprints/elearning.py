@@ -1,10 +1,90 @@
 from flask import Blueprint, render_template, request, send_from_directory, flash, redirect, url_for
-from flask_login import login_required, current_user
-from models import db, Video, Audio, ExamPaper, MarkingScheme, Announcement, StudentProgress, Student
+from flask_login import login_required, current_user, login_user, logout_user
+from werkzeug.security import check_password_hash, generate_password_hash
+from models import db, Video, Audio, ExamPaper, MarkingScheme, Announcement, StudentProgress, Student, User
 from datetime import datetime
 import os
 
 elearning_bp = Blueprint('elearning', __name__, template_folder='../templates')
+
+
+@elearning_bp.route('/login', methods=['GET', 'POST'])
+def dukan_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('elearning.index'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            flash('Welcome to Dukan E-Learning!', 'success')
+            return redirect(url_for('elearning.index'))
+        else:
+            flash('Invalid email or password. Please try again.', 'error')
+    
+    return render_template('elearning/dukan_login.html')
+
+
+@elearning_bp.route('/signup', methods=['GET', 'POST'])
+def dukan_signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('elearning.index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        full_name = request.form.get('full_name', '')
+        
+        if password != confirm_password:
+            flash('Passwords do not match!', 'error')
+            return render_template('elearning/dukan_signup.html')
+        
+        if User.query.filter_by(email=email).first():
+            flash('Email already registered. Please login instead.', 'error')
+            return render_template('elearning/dukan_signup.html')
+        
+        if User.query.filter_by(username=username).first():
+            flash('Username already taken. Please choose another.', 'error')
+            return render_template('elearning/dukan_signup.html')
+        
+        new_user = User(
+            username=username,
+            email=email,
+            password_hash=generate_password_hash(password),
+            role='student'
+        )
+        db.session.add(new_user)
+        
+        new_student = Student(
+            name=full_name,
+            email=email,
+            student_number=username
+        )
+        db.session.add(new_student)
+        
+        try:
+            db.session.commit()
+            flash('Account created successfully! Please login.', 'success')
+            return redirect(url_for('elearning.dukan_login'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred. Please try again.', 'error')
+    
+    return render_template('elearning/dukan_signup.html')
+
+
+@elearning_bp.route('/logout')
+@login_required
+def dukan_logout():
+    logout_user()
+    flash('You have been logged out from Dukan.', 'info')
+    return redirect(url_for('elearning.dukan_login'))
 
 
 def log_progress(resource_type, resource_id, action='view'):
