@@ -1,10 +1,118 @@
 {% extends 'base.html' %}
 
-{% block page_header %}E-learning{% endblock %}
+{% block page_header %}Dukan E-Learning Portal{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">E-learning (Placeholder)</h2>
-    <p class="text-gray-600">This is a placeholder for the E-learning module. You can provide the functionality and content later.</p>
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <div class="bg-white rounded-xl shadow-2xl p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Welcome to Dukan E-Learning</h1>
+                    <p class="text-gray-600 text-lg">Your comprehensive HSK Chinese proficiency exam preparation platform</p>
+                </div>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('dukan_admin.index') }}" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition flex items-center gap-2">
+                    <i class="bi bi-gear-fill"></i>
+                    <span>Admin Panel</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if announcements %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-md mb-8">
+            <h3 class="text-xl font-bold text-yellow-800 mb-4 flex items-center gap-2">
+                <i class="bi bi-megaphone-fill"></i>
+                Latest Announcements
+            </h3>
+            <div class="space-y-3">
+                {% for announcement in announcements[:3] %}
+                <div class="bg-white p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-900">{{ announcement.title }}</h4>
+                    <p class="text-gray-700 text-sm mt-1">{{ announcement.content }}</p>
+                    <small class="text-gray-500">{{ announcement.created_at.strftime('%Y-%m-%d') }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('elearning.announcements') }}" class="text-yellow-700 hover:text-yellow-900 font-semibold mt-3 inline-block">View All Announcements →</a>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <a href="{{ url_for('elearning.videos') }}" class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-xl p-8 text-white hover:from-red-600 hover:to-red-700 transform transition hover:scale-105">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-play-circle text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-3 py-1 text-sm font-bold">{{ videos_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold">Tutorial Videos</h3>
+                <p class="text-red-100 mt-2">Watch HSK preparation videos</p>
+            </a>
+
+            <a href="{{ url_for('elearning.audios') }}" class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-xl p-8 text-white hover:from-green-600 hover:to-green-700 transform transition hover:scale-105">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-volume-up text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-3 py-1 text-sm font-bold">{{ audios_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold">Listening Exercises</h3>
+                <p class="text-green-100 mt-2">Practice with exam audios</p>
+            </a>
+
+            <a href="{{ url_for('elearning.exam_papers') }}" class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-xl p-8 text-white hover:from-blue-600 hover:to-blue-700 transform transition hover:scale-105">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-file-earmark-text text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-3 py-1 text-sm font-bold">{{ exam_papers_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold">Exam Papers</h3>
+                <p class="text-blue-100 mt-2">Download past HSK papers</p>
+            </a>
+
+            <a href="{{ url_for('elearning.marking_schemes') }}" class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-xl p-8 text-white hover:from-purple-600 hover:to-purple-700 transform transition hover:scale-105">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-check2-circle text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-3 py-1 text-sm font-bold">{{ marking_schemes_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold">Marking Schemes</h3>
+                <p class="text-purple-100 mt-2">Access answer keys</p>
+            </a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <i class="bi bi-search"></i>
+                Quick Search
+            </h3>
+            <form action="{{ url_for('elearning.search') }}" method="get" class="flex gap-4">
+                <input type="text" name="q" placeholder="Search for videos, audios, exam papers..." class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                <select name="type" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <option value="all">All Resources</option>
+                    <option value="videos">Videos</option>
+                    <option value="audios">Audios</option>
+                    <option value="exam_papers">Exam Papers</option>
+                    <option value="marking_schemes">Marking Schemes</option>
+                </select>
+                <button type="submit" class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition font-semibold">Search</button>
+            </form>
+        </div>
+
+        {% if recently_viewed %}
+        <div class="mt-8 bg-white rounded-xl shadow-xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="bi bi-clock-history"></i>
+                Recently Viewed
+            </h3>
+            <div class="space-y-2">
+                {% for item in recently_viewed %}
+                <div class="border-l-4 border-purple-500 pl-4 py-2">
+                    <span class="text-sm text-gray-600">{{ item.resource_type }} - {{ item.accessed_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('elearning.my_progress') }}" class="text-purple-600 hover:text-purple-800 font-semibold mt-4 inline-block">View Full Progress →</a>
+        </div>
+        {% endif %}
+
+    </div>
 </div>
 {% endblock %}

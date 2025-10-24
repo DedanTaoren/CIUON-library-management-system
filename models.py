@@ -221,4 +221,99 @@ class EmailLog(db.Model):
     # Relationships
     student = db.relationship('Student', backref='emails_received', lazy=True)
     borrow_record = db.relationship('BorrowRecord', backref='emails_sent', lazy=True)
+
+
+class Video(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    video_url = db.Column(db.String(500), nullable=False)
+    hsk_level = db.Column(db.String(20), nullable=True)
+    video_type = db.Column(db.String(50), default='youtube')
+    thumbnail_url = db.Column(db.String(500), nullable=True)
+    duration = db.Column(db.String(20), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    created_by_user = db.relationship('User', backref='videos_created', lazy=True)
+
+
+class Audio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    exam_code = db.Column(db.String(50), nullable=False)
+    hsk_level = db.Column(db.String(20), nullable=True)
+    file_path = db.Column(db.String(500), nullable=False)
+    transcript_path = db.Column(db.String(500), nullable=True)
+    duration = db.Column(db.String(20), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    created_by_user = db.relationship('User', backref='audios_created', lazy=True)
+
+
+class ExamPaper(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    exam_code = db.Column(db.String(50), nullable=False)
+    hsk_level = db.Column(db.String(20), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    audio_id = db.Column(db.Integer, db.ForeignKey('audio.id'), nullable=True)
+    marking_scheme_id = db.Column(db.Integer, db.ForeignKey('marking_scheme.id'), nullable=True)
+    exam_year = db.Column(db.Integer, nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    created_by_user = db.relationship('User', backref='exam_papers_created', lazy=True)
+    audio = db.relationship('Audio', backref='exam_papers', lazy=True)
+
+
+class MarkingScheme(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    exam_code = db.Column(db.String(50), nullable=False)
+    hsk_level = db.Column(db.String(20), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    created_by_user = db.relationship('User', backref='marking_schemes_created', lazy=True)
+    exam_papers = db.relationship('ExamPaper', backref='marking_scheme', lazy=True)
+
+
+class Announcement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    announcement_type = db.Column(db.String(50), default='general')
+    priority = db.Column(db.String(20), default='normal')
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    expires_at = db.Column(db.DateTime, nullable=True)
+    
+    created_by_user = db.relationship('User', backref='announcements_created', lazy=True)
+
+
+class StudentProgress(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    resource_type = db.Column(db.String(50), nullable=False)
+    resource_id = db.Column(db.Integer, nullable=False)
+    action = db.Column(db.String(50), nullable=False)
+    accessed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    student = db.relationship('Student', backref='learning_progress', lazy=True)
  

@@ -1,14 +1,95 @@
 {% extends 'base.html' %}
 
-{% block page_header %}Dukan Admin{% endblock %}
+{% block page_header %}Dukan Admin Panel{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">Dukan Admin</h2>
-    <ul>
-        <li><a href="{{ url_for('dukan_admin.videos') }}">Manage Videos</a></li>
-        <li><a href="{{ url_for('dukan_admin.pdfs') }}">Manage PDFs</a></li>
-        <li><a href="{{ url_for('dukan_admin.audio') }}">Manage Audio</a></li>
-    </ul>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <div class="bg-white rounded-xl shadow-2xl p-8 mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Dukan Admin Panel</h1>
+            <p class="text-gray-600 text-lg">Manage all e-learning resources and content</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-play-circle text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-4 py-2 text-xl font-bold">{{ videos_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Videos</h3>
+                <p class="text-red-100 mb-4">Tutorial videos available</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('dukan_admin.videos') }}" class="bg-white text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition font-semibold">Manage</a>
+                    <a href="{{ url_for('dukan_admin.add_video') }}" class="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-red-800 transition font-semibold">Add New</a>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-volume-up text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-4 py-2 text-xl font-bold">{{ audios_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Audio Files</h3>
+                <p class="text-green-100 mb-4">Listening exercises</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('dukan_admin.audios') }}" class="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition font-semibold">Manage</a>
+                    <a href="{{ url_for('dukan_admin.add_audio') }}" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition font-semibold">Add New</a>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-file-earmark-text text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-4 py-2 text-xl font-bold">{{ exam_papers_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Exam Papers</h3>
+                <p class="text-blue-100 mb-4">HSK exam papers</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('dukan_admin.exam_papers') }}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition font-semibold">Manage</a>
+                    <a href="{{ url_for('dukan_admin.add_exam_paper') }}" class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition font-semibold">Add New</a>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-check2-circle text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-4 py-2 text-xl font-bold">{{ marking_schemes_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Marking Schemes</h3>
+                <p class="text-purple-100 mb-4">Answer keys</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('dukan_admin.marking_schemes') }}" class="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition font-semibold">Manage</a>
+                    <a href="{{ url_for('dukan_admin.add_marking_scheme') }}" class="bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition font-semibold">Add New</a>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-megaphone-fill text-6xl"></i>
+                    <span class="bg-white bg-opacity-25 rounded-full px-4 py-2 text-xl font-bold">{{ announcements_count }}</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Announcements</h3>
+                <p class="text-yellow-100 mb-4">System updates</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('dukan_admin.announcements') }}" class="bg-white text-yellow-600 px-4 py-2 rounded-lg hover:bg-yellow-50 transition font-semibold">Manage</a>
+                    <a href="{{ url_for('dukan_admin.add_announcement') }}" class="bg-yellow-700 text-white px-4 py-2 rounded-lg hover:bg-yellow-800 transition font-semibold">Add New</a>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-4">
+                    <i class="bi bi-arrow-left-circle text-6xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Back to Portal</h3>
+                <p class="text-indigo-100 mb-4">Student view</p>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('elearning.index') }}" class="bg-white text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition font-semibold">Go to Portal</a>
+                    <a href="{{ url_for('dashboard.index') }}" class="bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transition font-semibold">Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

@@ -46,7 +46,7 @@ def create_app():
     login_manager.login_message = 'Please log in to access this page.'
     
     # Import models (must be after db initialization)
-    from models import User, Student, Staff, Book, Category, BorrowRecord, Fine, AuditLog, BackupLog, NotificationPreference, EmailLog
+    from models import User, Student, Staff, Book, Category, BorrowRecord, Fine, AuditLog, BackupLog, NotificationPreference, EmailLog, Video, Audio, ExamPaper, MarkingScheme, Announcement, StudentProgress
     
     # Register blueprints
     from blueprints.auth import auth_bp
@@ -60,6 +60,7 @@ def create_app():
     from blueprints.audit import audit_bp
     from blueprints.backup import backup_bp
     from blueprints.elearning import elearning_bp
+    from blueprints.dukan_admin import dukan_admin_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(students_bp, url_prefix='/students')
@@ -72,7 +73,7 @@ def create_app():
     app.register_blueprint(audit_bp, url_prefix='/audit')
     app.register_blueprint(backup_bp, url_prefix='/backup')
     app.register_blueprint(elearning_bp, url_prefix='/elearning')
-    # Dukan portal removed
+    app.register_blueprint(dukan_admin_bp, url_prefix='/dukan/admin')
 
     # Allow environment variables to override or provide email configuration
     # This makes the email configuration flexible: you can use instance/config.py or environment variables.

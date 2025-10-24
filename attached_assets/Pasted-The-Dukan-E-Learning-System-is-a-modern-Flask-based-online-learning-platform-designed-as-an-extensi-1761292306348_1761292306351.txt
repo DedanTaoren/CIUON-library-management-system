@@ -1,0 +1,35 @@
+The Dukan E-Learning System is a modern, Flask-based online learning platform designed as an extension of the CIUON Library Management System, created to support the study and preparation of HSK Chinese proficiency examinations. The Dukan system is directly linked to the main library system through a dedicated “E-Learning” button. When clicked, this button securely redirects the user to the Dukan platform while maintaining the same login session and access privileges from the CIUON system. In this way, the CIUON system continues to act as the central administrative hub, while Dukan functions as the academic extension — specifically built to host and deliver educational content such as videos, exam PDFs, listening audios, and marking schemes.
+
+The system is built using Flask (Python) for the backend and Tailwind CSS for the frontend. Flask handles routing, user authentication, and database communication, while Tailwind CSS provides a clean, responsive, and visually coherent interface. This combination makes the system lightweight, maintainable, and adaptable to institutional expansion in the future. The database can be implemented using MySQL or MongoDB, where every uploaded or linked resource is stored with its metadata — such as file name, description, type, level (HSK1–6), and upload date.
+
+The integration between CIUON and Dukan occurs through a secure API or session-sharing mechanism. When a user clicks the E-Learning button in the CIUON dashboard, Flask validates their session token and grants access to the Dukan system without requiring a second login. Administrators share privileges across both systems, meaning any admin user in CIUON can manage and monitor resources, users, and analytics in Dukan.
+
+Once inside the Dukan platform, users are greeted by a home dashboard that serves as a gateway to all learning resources. The design, powered by Tailwind CSS, follows a modern academic style with responsive grids, soft color tones, and accessible navigation. Key sections are clearly represented: Videos, Listening Exercises, Exam Papers, Marking Schemes, and Announcements. Each section is accessible from a top navigation bar and includes a dynamic search feature to quickly locate materials by HSK level or keyword.
+
+The Video Section allows students to stream or watch tutorial videos that support their HSK studies. Videos are manually added by administrators either by upload or by embedding YouTube or other hosted links. Each video card displays its title, level, and a short description. Flask routes fetch the data from the database, while Tailwind components render the grid layout responsively. A caching feature can be added to improve video loading performance and reduce server requests.
+
+The Listening Exercises Section provides students with access to listening audio files that accompany specific HSK exams. Each audio file is linked to an exam code (for example, HSK2-2024B), ensuring that every exam’s listening material is organized systematically. The embedded HTML5 audio player offers options such as playback speed control, loop, and transcript download. Since you will be uploading the audio files manually, the admin panel includes a simple upload form with metadata fields for exam code, level, and description.
+
+The Exam Papers Section is one of the most important features of Dukan. It lists all available HSK exam papers in PDF format, along with links to the corresponding listening audios and marking schemes. Each paper includes its title, level, upload date, and optional description. Flask’s file routing system ensures that each PDF is stored securely in a designated folder (for example, /static/uploads/papers/) and can be downloaded or viewed in-browser. To prevent broken links or accidental overwrites, the system automatically checks for duplicate file names before saving.
+
+The Marking Schemes Section provides detailed answer keys and scoring rubrics for each exam. These are also in PDF format and can be cross-referenced with their respective exams. Each marking scheme is categorized under its HSK level, enabling students to easily navigate to the correct resource.
+
+For content management, the system includes a simplified Admin Panel that can be accessed by users who are administrators in the CIUON system. The panel provides several essential tools:
+
+Manual Upload Manager: A clean, form-based interface where admins can upload PDFs, audio files, and video links.
+
+Edit and Delete Functions: Admins can update file details or remove outdated resources.
+
+Category Management: Admins can assign or reassign materials to different HSK levels.
+
+Resource Preview: Admins can preview how a file or video will appear to students before publishing.
+
+Validation and Error Handling: The system checks that uploaded files meet correct formats (e.g., .pdf, .mp3, .mp4) and handles missing or invalid uploads gracefully.
+
+To make learning interactive, Dukan includes a student progress tracker. When a student views or downloads a resource, Flask records that interaction in a log table. This data can be used to generate basic statistics, such as which materials are most accessed or which students have completed all resources for a given level. A “Recently Viewed” section allows users to quickly return to previously accessed materials.
+
+Additional support functionalities ensure a smoother experience. A search and filtering system allows users to locate materials by exam code, resource type, or HSK level. A dark/light mode toggle, built using Tailwind’s theme utilities, enhances comfort for users studying at night. The frontend layout is fully responsive, making the system functional on smartphones, tablets, and computers alike. Furthermore, the platform uses Flask error handlers to display friendly error messages when a file is missing or a page cannot be found, improving user experience and system reliability.
+
+The Announcement or Updates section allows administrators to post short notifications about new uploads, upcoming exams, or schedule changes. These announcements are stored in the database and displayed on the homepage in a collapsible Tailwind alert box. The Help and Contact Page provides instructions on how to use the system and contact information for technical support.
+
+In conclusion, the Dukan E-Learning System represents a fully functional and well-integrated learning platform that enhances the CIUON Library Management System. Its design philosophy emphasizes simplicity, usability, and scalability. Built with Flask for backend efficiency and Tailwind CSS for modern design, Dukan enables students to easily access HSK-related resources such as videos, audios, PDFs, and marking schemes. Its shared authentication through the E-Learning button ensures seamless integration with the main system, while its manual upload and management tools provide full control for administrators. With features like resource tracking, category management, error handling, and responsive UI, Dukan stands as a comprehensive solution for digital language education, empowering both teachers and learners in a single, connected ecosystem.

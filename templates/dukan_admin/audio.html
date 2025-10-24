@@ -1,30 +1,64 @@
 {% extends 'base.html' %}
 
-{% block page_header %}Dukan Audio{% endblock %}
+{% block page_header %}Manage Audio Files{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">Audio Lessons</h2>
-    <a href="{{ url_for('dukan_admin.add_audio') }}" class="btn btn-primary mb-4">Add Audio</a>
-    <table class="table">
-        <thead>
-            <tr><th>Title</th><th>Topic</th><th>Level</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-            {% for a in audio_lessons %}
-            <tr>
-                <td>{{ a.title }}</td>
-                <td>{{ a.topic }}</td>
-                <td>{{ a.level }}</td>
-                <td>
-                    <a href="{{ a.audio_url }}" class="btn btn-sm btn-outline-primary" target="_blank">Play</a>
-                    <a href="{{ url_for('dukan_admin.delete_audio', id=a.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4">No audio lessons yet</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Audio Library</h2>
+        <div class="flex gap-2">
+            <a href="{{ url_for('dukan_admin.add_audio') }}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold flex items-center gap-2">
+                <i class="bi bi-plus-circle"></i>
+                Add Audio
+            </a>
+            <a href="{{ url_for('dukan_admin.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition font-semibold">Back</a>
+        </div>
+    </div>
+
+    {% if audios %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam Code</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HSK Level</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for audio in audios %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ audio.title }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {{ audio.exam_code }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ audio.hsk_level or 'N/A' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ audio.created_at.strftime('%Y-%m-%d') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <form action="{{ url_for('dukan_admin.delete_audio', audio_id=audio.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <i class="bi bi-volume-up text-6xl text-gray-300"></i>
+        <p class="text-gray-500 mt-4">No audio files yet. Add your first audio to get started!</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -142,7 +142,7 @@
                 </h5>
             </div>
             <div class="p-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
                     <a href="{{ url_for('borrowing.borrow_book') }}" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:from-red-600 hover:to-red-700 transform transition hover:scale-105 shadow-lg">
                         <i class="bi bi-plus-circle text-4xl"></i>
                         <span class="font-bold text-lg">Borrow Book</span>
@@ -161,6 +161,16 @@
                     <a href="{{ url_for('borrowing.list_fines') }}" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:from-amber-600 hover:to-amber-700 transform transition hover:scale-105 shadow-lg">
                         <i class="bi bi-cash text-4xl"></i>
                         <span class="font-bold text-lg">View Fines</span>
+                    </a>
+                </div>
+                
+                <div class="mt-6">
+                    <a href="{{ url_for('elearning.index') }}" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-10 py-8 rounded-xl flex items-center justify-center gap-4 hover:from-purple-700 hover:to-indigo-700 transform transition hover:scale-105 shadow-2xl w-full">
+                        <i class="bi bi-mortarboard-fill text-5xl"></i>
+                        <div class="text-left">
+                            <div class="font-bold text-2xl">Dukan E-Learning Portal</div>
+                            <div class="text-purple-100 text-sm mt-1">Access HSK exam materials, videos, and resources</div>
+                        </div>
                     </a>
                 </div>
             </div>
