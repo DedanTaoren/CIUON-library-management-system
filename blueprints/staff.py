@@ -1,13 +1,22 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from models import Staff, BorrowRecord, db
 from sqlalchemy import or_
 from utils.audit_logger import log_action
+from utils.decorators import library_access_required
 
 staff_bp = Blueprint('staff', __name__)
 
+@staff_bp.before_request
+def check_library_access():
+    """Ensure only library staff (not students) can access staff management routes"""
+    if current_user.is_authenticated and current_user.role == 'student':
+        flash('This section is for library staff only. Students can access Dukan E-Learning.', 'info')
+        return redirect(url_for('elearning.index'))
+
 @staff_bp.route('/')
 @login_required
+@library_access_required
 def list_staff():
     search = request.args.get('search', '')
     if search:

@@ -4,9 +4,17 @@ from flask_login import login_required, current_user
 from models import Student, Staff, Book, BorrowRecord, Fine, db
 from sqlalchemy import func
 from utils.email_service import send_due_date_reminders, send_overdue_notices, get_email_statistics
+from utils.decorators import library_access_required
 import os
 
 dashboard_bp = Blueprint('dashboard', __name__)
+
+@dashboard_bp.before_request
+def check_library_access():
+    """Ensure only library staff (not students) can access dashboard routes"""
+    if current_user.is_authenticated and current_user.role == 'student':
+        flash('This section is for library staff only. Students can access Dukan E-Learning.', 'info')
+        return redirect(url_for('elearning.index'))
 
 @dashboard_bp.route('/email-system')
 @login_required
@@ -43,6 +51,7 @@ def email_system():
 
 @dashboard_bp.route('/')
 @login_required
+@library_access_required
 def index():
     # Get dashboard statistics
     total_students = Student.query.count()
