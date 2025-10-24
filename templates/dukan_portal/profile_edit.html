@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6 max-w-3xl">
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input name="username" value="{{ user.username }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input name="email" value="{{ user.email }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-control">
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="librarian" {% if user.role == 'librarian' %}selected{% endif %}>Librarian</option>
+            </select>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="active" class="form-check-input" id="activeCheck" {% if user.active %}checked{% endif %}>
+            <label for="activeCheck" class="form-check-label">Active</label>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-primary">Save Changes</button>
+            <a href="{{ url_for('dukan_portal.profile_view', user_id=user.id) }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

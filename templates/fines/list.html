@@ -74,10 +74,13 @@
                                class="btn btn-sm btn-warning">
                                 <i class="bi bi-pencil"></i> Adjust
                             </a>
-                            <form method="POST" action="{{ url_for('fines.pay_fine', fine_id=fine.id) }}" 
-                                  style="display: inline;">
-                                <button type="submit" class="btn btn-sm btn-success" 
-                                        onclick="return confirm('Mark this fine as paid?')">
+                            <form method="POST" action="{{ url_for('fines.prompt_payment', fine_id=fine.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Send M-Pesa payment request to student?')">
+                                    <i class="bi bi-phone"></i> Prompt Payment
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('fines.pay_fine', fine_id=fine.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Mark this fine as paid?')">
                                     <i class="bi bi-check"></i> Mark Paid
                                 </button>
                             </form>

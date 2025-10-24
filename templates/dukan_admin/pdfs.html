@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Dukan PDFs{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">PDFs</h2>
+    <a href="{{ url_for('dukan_admin.add_pdf') }}" class="btn btn-primary mb-4">Add PDF</a>
+    <table class="table">
+        <thead>
+            <tr><th>Title</th><th>Type</th><th>Level</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for p in pdfs %}
+            <tr>
+                <td>{{ p.title }}</td>
+                <td>{{ p.type }}</td>
+                <td>{{ p.level }}</td>
+                <td>
+                    <a href="{{ p.file_url }}" class="btn btn-sm btn-outline-primary" target="_blank">View</a>
+                    <a href="{{ url_for('dukan_admin.delete_pdf', id=p.id) }}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No PDFs yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

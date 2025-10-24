@@ -59,6 +59,7 @@ def create_app():
     from blueprints.fines import fines_bp
     from blueprints.audit import audit_bp
     from blueprints.backup import backup_bp
+    from blueprints.elearning import elearning_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(students_bp, url_prefix='/students')
@@ -70,6 +71,8 @@ def create_app():
     app.register_blueprint(fines_bp, url_prefix='/fines')
     app.register_blueprint(audit_bp, url_prefix='/audit')
     app.register_blueprint(backup_bp, url_prefix='/backup')
+    app.register_blueprint(elearning_bp, url_prefix='/elearning')
+    # Dukan portal removed
 
     # Allow environment variables to override or provide email configuration
     # This makes the email configuration flexible: you can use instance/config.py or environment variables.
@@ -77,6 +80,7 @@ def create_app():
         env_val = os.environ.get(key)
         if env_val:
             app.config[key] = env_val
+    # DUKAN_URL not used when Dukan integration is disabled
     
     # User loader for Flask-Login
     @login_manager.user_loader

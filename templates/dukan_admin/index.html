@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Dukan Admin{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Dukan Admin</h2>
+    <ul>
+        <li><a href="{{ url_for('dukan_admin.videos') }}">Manage Videos</a></li>
+        <li><a href="{{ url_for('dukan_admin.pdfs') }}">Manage PDFs</a></li>
+        <li><a href="{{ url_for('dukan_admin.audio') }}">Manage Audio</a></li>
+    </ul>
+</div>
+{% endblock %}

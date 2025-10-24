@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Profiles{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">User Profiles</h2>
+        <div>
+            <a href="{{ url_for('dukan_portal.index') }}" class="btn btn-outline-secondary">Back to Portal</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Active</th>
+                <th>Joined</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.role }}</td>
+                <td>{{ 'Yes' if u.active else 'No' }}</td>
+                <td>{{ u.created_at.strftime('%Y-%m-%d') if u.created_at }}</td>
+                <td>
+                    <a href="{{ url_for('dukan_portal.profile_view', user_id=u.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                    <a href="{{ url_for('dukan_portal.profile_edit', user_id=u.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="post" action="{{ url_for('dukan_portal.profile_delete', user_id=u.id) }}" style="display:inline-block" onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">No users found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

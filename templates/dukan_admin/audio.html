@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Dukan Audio{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Audio Lessons</h2>
+    <a href="{{ url_for('dukan_admin.add_audio') }}" class="btn btn-primary mb-4">Add Audio</a>
+    <table class="table">
+        <thead>
+            <tr><th>Title</th><th>Topic</th><th>Level</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for a in audio_lessons %}
+            <tr>
+                <td>{{ a.title }}</td>
+                <td>{{ a.topic }}</td>
+                <td>{{ a.level }}</td>
+                <td>
+                    <a href="{{ a.audio_url }}" class="btn btn-sm btn-outline-primary" target="_blank">Play</a>
+                    <a href="{{ url_for('dukan_admin.delete_audio', id=a.id) }}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No audio lessons yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

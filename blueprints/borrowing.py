@@ -1,3 +1,74 @@
+from flask_login import login_required
+from flask import Blueprint
+borrowing_bp = Blueprint('borrowing', __name__)
+
+@borrowing_bp.route('/confirm_return/<int:borrow_id>', methods=['POST'], endpoint='confirm_return')
+@login_required
+def confirm_return(borrow_id):
+    borrow_record = BorrowRecord.query.get_or_404(borrow_id)
+    if borrow_record.returned_at:
+        flash('This book has already been returned', 'error')
+        return redirect(url_for('borrowing.list_borrows'))
+    borrow_record.returned_at = datetime.utcnow()
+    db.session.commit()
+    # Send email to student
+    if borrow_record.student_id:
+        student = Student.query.get(borrow_record.student_id)
+        fine = Fine.query.filter_by(borrow_record_id=borrow_record.id, student_id=student.id).first()
+        subject = f"Book Returned & Fine Paid - {borrow_record.book_ref.title}"
+        body = f"Dear {student.name},\n\nYou have successfully paid a fine of KES {fine.amount} for late return.\nBook: {borrow_record.book_ref.title}\nReturned At: {borrow_record.returned_at.strftime('%Y-%m-%d %H:%M:%S')}\n\nThank you for using the library!\nConfucius Institute Library\nUniversity of Nairobi"
+        from utils.email_service import send_email
+        send_email(student.email, subject, body, 'return_and_fine_paid', student.id, borrow_record.id)
+    flash('Book returned and fine payment confirmed. Email sent to student.', 'success')
+    return redirect(url_for('borrowing.list_borrows'))
+@borrowing_bp.route('/confirm_return/<int:borrow_id>', methods=['POST'])
+@login_required
+def confirm_return(borrow_id):
+    borrow_record = BorrowRecord.query.get_or_404(borrow_id)
+    if borrow_record.returned_at:
+        flash('This book has already been returned', 'error')
+        return redirect(url_for('borrowing.list_borrows'))
+    borrow_record.returned_at = datetime.utcnow()
+    db.session.commit()
+    # Send email to student
+    if borrow_record.student_id:
+        student = Student.query.get(borrow_record.student_id)
+        fine = Fine.query.filter_by(borrow_record_id=borrow_record.id, student_id=student.id).first()
+        subject = f"Book Returned & Fine Paid - {borrow_record.book_ref.title}"
+        body = f"Dear {student.name},\n\nYou have successfully paid a fine of KES {fine.amount} for late return.\nBook: {borrow_record.book_ref.title}\nReturned At: {borrow_record.returned_at.strftime('%Y-%m-%d %H:%M:%S')}\n\nThank you for using the library!\nConfucius Institute Library\nUniversity of Nairobi"
+        from utils.email_service import send_email
+        send_email(student.email, subject, body, 'return_and_fine_paid', student.id, borrow_record.id)
+    flash('Book returned and fine payment confirmed. Email sent to student.', 'success')
+    return redirect(url_for('borrowing.list_borrows'))
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required
+from models import Book, Student, Staff, BorrowRecord, Fine, db
+from datetime import datetime, timedelta
+from utils.audit_logger import log_action
+from utils.email_service import send_email, send_due_date_reminders, send_overdue_notices
+
+borrowing_bp = Blueprint('borrowing', __name__)
+
+@borrowing_bp.route('/')
+@login_required
+def list_borrows():
+    status = request.args.get('status', 'active')
+    # ... existing code ...
+
+@borrowing_bp.route('/fines/<int:fine_id>/pay', methods=['GET', 'POST'])
+@login_required
+def pay_fine_page(fine_id):
+    fine = Fine.query.get_or_404(fine_id)
+    student = Student.query.get(fine.student_id)
+    if request.method == 'POST':
+        # Here you would integrate with M-Pesa API and verify payment
+        # For now, mark as paid for demonstration
+        fine.paid = True
+        fine.paid_at = datetime.utcnow()
+        db.session.commit()
+        flash('Fine paid successfully. Book return completed.', 'success')
+        return redirect(url_for('borrowing.list_borrows'))
+    return render_template('borrowing/pay_fine.html', fine=fine, student=student)
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from models import Book, Student, Staff, BorrowRecord, Fine, db
@@ -100,10 +171,25 @@ def return_book(borrow_id):
         return redirect(url_for('borrowing.list_borrows'))
     
     if request.method == 'POST':
+        # Check if overdue
+        is_overdue = borrow_record.is_overdue
         borrow_record.returned_at = datetime.utcnow()
         borrow_record.notes = request.form.get('notes', borrow_record.notes)
-        
-        
+        fine = None
+        if is_overdue and borrow_record.student_id:
+            # Calculate fine amount (40 KES per day overdue)
+            days_overdue = borrow_record.days_overdue
+            fine_amount = days_overdue * 40
+            # Create fine if not already exists
+            fine = Fine.query.filter_by(borrow_record_id=borrow_record.id, student_id=borrow_record.student_id).first()
+            if not fine:
+                fine = Fine(
+                    student_id=borrow_record.student_id,
+                    borrow_record_id=borrow_record.id,
+                    amount=fine_amount,
+                    reason=f"Late return: {days_overdue} days overdue",
+                )
+                db.session.add(fine)
         try:
             db.session.commit()
             # Send return confirmation email
@@ -119,12 +205,29 @@ def return_book(borrow_id):
                 body = f"Dear {staff.name},\n\nYou have successfully returned the book:\n\nBook: {borrow_record.book_ref.title}\nAuthor: {borrow_record.book_ref.author or 'N/A'}\nReturned At: {borrow_record.returned_at.strftime('%Y-%m-%d %H:%M:%S')}\n\nThank you for using the library!\nConfucius Institute Library\nUniversity of Nairobi"
                 from utils.email_service import send_email
                 send_email(staff.email, subject, body, 'return_confirmation', staff.id, borrow_record.id)
-            flash('Book returned successfully', 'success')
-            return redirect(url_for('borrowing.list_borrows'))
+            if is_overdue and fine:
+                flash(f'This book was overdue. Fine of KES {fine.amount} must be paid.', 'warning')
+                return redirect(url_for('borrowing.pay_fine_page', fine_id=fine.id))
+            else:
+                flash('Book returned successfully', 'success')
+                return redirect(url_for('borrowing.list_borrows'))
         except Exception as e:
             db.session.rollback()
             flash('Error processing return', 'error')
-    
+    # Ensure fine exists for overdue books before rendering form
+    if borrow_record.is_overdue and borrow_record.student_id:
+        fine = Fine.query.filter_by(borrow_record_id=borrow_record.id, student_id=borrow_record.student_id).first()
+        if not fine:
+            days_overdue = borrow_record.days_overdue
+            fine_amount = days_overdue * 40
+            fine = Fine(
+                student_id=borrow_record.student_id,
+                borrow_record_id=borrow_record.id,
+                amount=fine_amount,
+                reason=f"Late return: {days_overdue} days overdue",
+            )
+            db.session.add(fine)
+            db.session.commit()
     return render_template('borrowing/return_form.html', borrow_record=borrow_record)
 
 @borrowing_bp.route('/fines')
@@ -133,17 +236,21 @@ def list_fines():
     fines = Fine.query.filter_by(paid=False).order_by(Fine.created_at.desc()).all()
     return render_template('borrowing/fines.html', fines=fines)
 
-@borrowing_bp.route('/fines/<int:fine_id>/pay', methods=['POST'])
+@borrowing_bp.route('/fines/<int:fine_id>/pay', methods=['GET', 'POST'])
 @login_required
 def pay_fine(fine_id):
     fine = Fine.query.get_or_404(fine_id)
-    if not fine.paid:
+    student = Student.query.get(fine.student_id)
+    from os import getenv
+    confucius_number = getenv('CONFUCIUS_MPESA_NUMBER', '0748299301')
+    if request.method == 'POST':
+        phone_number = request.form.get('phone_number')
+        if phone_number and phone_number != student.phone:
+            student.phone = phone_number
+            db.session.commit()
         fine.paid = True
         fine.paid_at = datetime.utcnow()
-        try:
-            db.session.commit()
-            flash('Fine marked as paid', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash('Error processing fine payment', 'error')
-    return redirect(url_for('borrowing.list_fines'))
+        db.session.commit()
+        flash(f'Fine paid successfully for phone number {phone_number}. Book return completed.', 'success')
+        return redirect(url_for('borrowing.list_borrows'))
+    return render_template('borrowing/pay_fine.html', fine=fine, student=student, confucius_number=confucius_number)

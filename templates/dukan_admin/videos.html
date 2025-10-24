@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Dukan Videos{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Videos</h2>
+    <a href="{{ url_for('dukan_admin.add_video') }}" class="btn btn-primary mb-4">Add Video</a>
+    <table class="table">
+        <thead>
+            <tr><th>Title</th><th>Category</th><th>Level</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for v in videos %}
+            <tr>
+                <td>{{ v.title }}</td>
+                <td>{{ v.category }}</td>
+                <td>{{ v.level }}</td>
+                <td>
+                    <a href="{{ v.file_url }}" class="btn btn-sm btn-outline-primary" target="_blank">View</a>
+                    <a href="{{ url_for('dukan_admin.delete_video', id=v.id) }}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No videos yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

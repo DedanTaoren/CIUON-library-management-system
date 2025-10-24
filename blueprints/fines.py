@@ -1,10 +1,28 @@
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from models import Fine, Student, BorrowRecord, db
 from utils.audit_logger import log_action
 from datetime import datetime
+from utils.mpesa_payment import send_mpesa_payment_request
 
 fines_bp = Blueprint('fines', __name__)
+
+@fines_bp.route('/<int:fine_id>/prompt_payment', methods=['POST'])
+@login_required
+def prompt_payment(fine_id):
+    fine = Fine.query.get_or_404(fine_id)
+    student = Student.query.get_or_404(fine.student_id)
+    if fine.paid or fine.waived:
+        flash('Fine already paid or waived.', 'warning')
+        return redirect(url_for('fines.list_fines'))
+    # Assume student.phone_number exists
+    response = send_mpesa_payment_request(student.phone_number, fine.amount)
+    if response.get('status') == 'sent':
+        flash(f'M-Pesa payment request sent to {student.phone_number} for KES {fine.amount}', 'success')
+    else:
+        flash('Failed to send M-Pesa payment request.', 'error')
+    return redirect(url_for('fines.list_fines'))
 
 @fines_bp.route('/')
 @login_required

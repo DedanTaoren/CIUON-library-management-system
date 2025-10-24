@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Add Dukan PDF{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Add PDF</h2>
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Title</label>
+            <input name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Type</label>
+            <input name="type" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Level</label>
+            <input name="level" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>PDF File</label>
+            <input name="pdf_file" type="file" class="form-control" required>
+        </div>
+        <button class="btn btn-primary">Add PDF</button>
+    </form>
+</div>
+{% endblock %}

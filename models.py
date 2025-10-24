@@ -96,6 +96,9 @@ class Book(db.Model):
         return self.category_ref.name if self.category_ref else 'Uncategorized'
 
 class BorrowRecord(db.Model):
+    @property
+    def fines(self):
+        return Fine.query.filter_by(borrow_record_id=self.id).all()
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=True)
@@ -218,3 +221,4 @@ class EmailLog(db.Model):
     # Relationships
     student = db.relationship('Student', backref='emails_received', lazy=True)
     borrow_record = db.relationship('BorrowRecord', backref='emails_sent', lazy=True)
+ 

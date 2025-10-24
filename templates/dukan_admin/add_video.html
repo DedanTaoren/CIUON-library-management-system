@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Add Dukan Video{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Add Video</h2>
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Title</label>
+            <input name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Category</label>
+            <input name="category" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Level</label>
+            <input name="level" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Duration</label>
+            <input name="duration" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Video File</label>
+            <input name="video_file" type="file" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Thumbnail</label>
+            <input name="thumbnail_file" type="file" class="form-control">
+        </div>
+        <button class="btn btn-primary">Add</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block page_header %}Add Dukan Audio{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Add Audio Lesson</h2>
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Title</label>
+            <input name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Transcript</label>
+            <textarea name="transcript" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Topic</label>
+            <input name="topic" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Level</label>
+            <input name="level" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Duration</label>
+            <input name="duration" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Audio File</label>
+            <input name="audio_file" type="file" class="form-control" required>
+        </div>
+        <button class="btn btn-primary">Add Audio</button>
+    </form>
+</div>
+{% endblock %}

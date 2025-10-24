@@ -103,6 +103,14 @@
                     <span class="font-medium">Fines</span>
                 </a>
 
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('elearning.index') }}" class="sidebar-link flex items-center gap-3 px-6 py-3 text-white hover:bg-indigo-600 transition">
+                    <i class="bi bi-mortarboard text-xl"></i>
+                    <span class="font-medium">E-learning</span>
+                </a>
+                {% endif %}
+
+                    {# Dukan removed - placeholder deleted as requested #}
                     {% if current_user.is_authenticated and current_user.role == 'admin' %}
                     <a href="{{ url_for('dashboard.email_system') }}" class="sidebar-link flex items-center gap-3 px-6 py-3 text-white hover:bg-green-600 transition">
                         <i class="bi bi-envelope text-xl"></i>
